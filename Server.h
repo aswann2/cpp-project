@@ -2,7 +2,7 @@
 #include <cstring>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <unistd>
+#include <unistd.h>
 
 using namespace std;
 
@@ -11,7 +11,7 @@ class Server
 public:
 	Server(int port);
 	~Server();
-	bool start();
+	void start();
 	void addClient();
 	void receiveMessage();
 
