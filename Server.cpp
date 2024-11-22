@@ -32,7 +32,7 @@ void Server::start()
 {
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
     listen(serverSocket, 5);
-    cout << "Server started. Waiting for clients to connect..." << endl;
+    cout << "Server established." << endl;
 
     while (true)
     {
