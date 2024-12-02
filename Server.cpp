@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <mutex>
 #include <algorithm>
+#include <ctime>
 
 using namespace std;
 
@@ -75,11 +76,20 @@ void Server::addClient()
 void Server::broadcastMessage(const string &message, int senderSocket)
 {
     lock_guard<mutex> lock(clientMutex);
+    
+    // Get current time
+    time_t now = time(nullptr);
+    char timeBuffer[20];
+    strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localtime(&now));
+
+    // Format message with timestamp
+    string formattedMessage = "[" + string(timeBuffer) + "] " + message;
+
     for (int client : clientSockets)
     {
-        if (client != senderSocket) 
+        if (client != senderSocket)
         {
-            send(client, message.c_str(), message.length(), 0);
+            send(client, formattedMessage.c_str(), formattedMessage.length(), 0);
         }
     }
 }

@@ -42,10 +42,11 @@ void Client::start()
     thread receiveThread([this]() { receiveMessages(); });
 
     // Main thread for sending messages
-    string message;
     while (true)
     {
+        string message;
         getline(cin, message);
+
         if (message == "/quit")
         {
             cout << "Exiting chat..." << endl;
@@ -53,10 +54,14 @@ void Client::start()
             exit(0);
         }
 
-        string formattedMessage = username + ": " + message;
+        // Add timestamp to outgoing messages
+        time_t now = time(nullptr);
+        char timeBuffer[20];
+        strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localtime(&now));
+        string formattedMessage = "[" + string(timeBuffer) + "] " + username + ": " + message;
+
         send(clientSocket, formattedMessage.c_str(), formattedMessage.length(), 0);
     }
-
     receiveThread.join(); // Wait for the receive thread to finish
 }
 
