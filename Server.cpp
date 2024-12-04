@@ -54,6 +54,8 @@ void Server::addClient()
 
         thread([this, clientSocket]() {
             char buffer[1024];
+            bool firstMessage = true; // To track the first message
+
             while (true)
             {
                 memset(buffer, 0, sizeof(buffer));
@@ -66,11 +68,19 @@ void Server::addClient()
                     cout << "Client disconnected." << endl;
                     break;
                 }
+
+                if (firstMessage)
+                {
+                    firstMessage = false; // Skip broadcasting the first message
+                    continue;
+                }
+                /* do else statement here. ifykyk */
                 broadcastMessage(buffer, clientSocket);
             }
         }).detach();
     }
 }
+
 
 void Server::broadcastMessage(const string &message, int senderSocket)
 {
