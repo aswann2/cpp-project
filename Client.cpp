@@ -31,17 +31,15 @@ void Client::connectToServer()
     }
 
     cout << "Connected to server as " << username << "." << endl;
+    cout << "Please type '/quit' to disconnect." << endl;
 }
 
 void Client::start()
 {
-    // Send the username to the server as the first message
     send(clientSocket, username.c_str(), username.length(), 0);
 
-    // Thread for receiving messages
     thread receiveThread([this]() { receiveMessages(); });
 
-    // Main thread for sending messages
     while (true)
     {
         string message;
@@ -49,21 +47,16 @@ void Client::start()
 
         if (message == "/quit")
         {
-            cout << "Exiting chat..." << endl;
+            cout << "Disconnected." << endl;
             close(clientSocket);
             exit(0);
         }
 
-        // Add timestamp to outgoing messages
-        time_t now = time(nullptr);
-        char timeBuffer[20];
-        strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", localtime(&now));
-        string formattedMessage = "[" + string(timeBuffer) + "] " + username + ": " + message;
-
-        send(clientSocket, formattedMessage.c_str(), formattedMessage.length(), 0);
+        send(clientSocket, message.c_str(), message.length(), 0);
     }
-    receiveThread.join(); // Wait for the receive thread to finish
+    receiveThread.join();
 }
+
 
 void Client::receiveMessages()
 {
