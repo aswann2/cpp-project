@@ -67,6 +67,8 @@ void Server::addClient()
                     cout << "Client disconnected." << endl;
                     break;
                 }
+                const char* message = " joined the server.";
+                strncat(buffer, message, sizeof(buffer) - strlen(buffer) - 1);
                 broadcastMessage(buffer, clientSocket);
             }
         }).detach();
