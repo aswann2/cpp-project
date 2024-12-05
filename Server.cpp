@@ -93,11 +93,26 @@ void Server::addClient()
 void Server::broadcastMessage(const string &message, int senderSocket)
 {
     lock_guard<mutex> lock(clientMutex);
+    string timestamp = getCurrentTime();
+    string formattedMessage = timestamp + " " + message;
     for (int client : clientSockets)
     {
-        if (client != senderSocket) 
+        if (client != senderSocket)
         {
-            send(client, message.c_str(), message.length(), 0);
+            send(client, formattedMessage.c_str(), formattedMessage.length(), 0);
         }
     }
+}
+
+string Server::getCurrentTime()
+{
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), "[%Y-%m-%d %H:%M:%S]", timeinfo);
+    return string(buffer);
 }

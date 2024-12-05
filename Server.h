@@ -17,6 +17,7 @@ public:
     void start();
     void addClient();
     void broadcastMessage(const string &message, int senderSocket);
+    string getCurrentTime();
 
 private:
     int serverSocket;
