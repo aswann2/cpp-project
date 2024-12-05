@@ -54,8 +54,8 @@ void Server::addClient()
 
         thread([this, clientSocket]() {
             char buffer[1024];
-            bool firstMessageReceived = false; // Flag to track if the first message has been received
-            string username; // Variable to store the username
+            bool firstMessageReceived = false; 
+            string username; 
 
             while (true)
             {
@@ -63,23 +63,27 @@ void Server::addClient()
                 int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
                 if (bytesRead <= 0)
                 {
+                    string leaveMessage =  username.substr(0, (username.length() / 2) - 1) + " left the server.";
+                    broadcastMessage(leaveMessage, clientSocket);    
+
                     close(clientSocket);
                     lock_guard<mutex> lock(clientMutex);
                     clientSockets.erase(std::remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
+                    
                     cout << "Client disconnected." << endl;
                     break;
                 }
 
                 if (!firstMessageReceived)
                 {
-                    username = buffer; // Store the username from the first message
-                    string joinMessage = username.substr(0, (username.length() / 2) - 1)+ " joined the server.";
-                    broadcastMessage(joinMessage, clientSocket); // Broadcast the join message
-                    firstMessageReceived = true; // Set the flag to true
+                    username = buffer; 
+                    string joinMessage = username.substr(0, (username.length() / 2) - 1) + " joined the server";
+                    broadcastMessage(joinMessage, clientSocket); 
+                    firstMessageReceived = true; 
                 }
                 else
                 {
-                    broadcastMessage(buffer, clientSocket); // Broadcast subsequent messages
+                    broadcastMessage(buffer, clientSocket); 
                 }
             }
         }).detach();
