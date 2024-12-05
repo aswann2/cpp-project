@@ -54,7 +54,8 @@ void Server::addClient()
 
         thread([this, clientSocket]() {
             char buffer[1024];
-            bool firstMessage = true; // To track the first message
+            bool firstMessageReceived = false; // Flag to track if the first message has been received
+            string username; // Variable to store the username
 
             while (true)
             {
@@ -69,18 +70,21 @@ void Server::addClient()
                     break;
                 }
 
-                if (firstMessage)
+                if (!firstMessageReceived)
                 {
-                    firstMessage = false; // Skip broadcasting the first message
-                    continue;
+                    username = buffer; // Store the username from the first message
+                    string joinMessage = username.substr(0, (username.length() / 2) - 1)+ " joined the server.";
+                    broadcastMessage(joinMessage, clientSocket); // Broadcast the join message
+                    firstMessageReceived = true; // Set the flag to true
                 }
-                /* do else statement here. ifykyk */
-                broadcastMessage(buffer, clientSocket);
+                else
+                {
+                    broadcastMessage(buffer, clientSocket); // Broadcast subsequent messages
+                }
             }
         }).detach();
     }
 }
-
 
 void Server::broadcastMessage(const string &message, int senderSocket)
 {
