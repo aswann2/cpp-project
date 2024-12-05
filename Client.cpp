@@ -35,13 +35,10 @@ void Client::connectToServer()
 
 void Client::start()
 {
-    // Send the username to the server as the first message
     send(clientSocket, username.c_str(), username.length(), 0);
 
-    // Thread for receiving messages
     thread receiveThread([this]() { receiveMessages(); });
 
-    // Main thread for sending messages
     string message;
     while (true)
     {
@@ -57,7 +54,7 @@ void Client::start()
         send(clientSocket, formattedMessage.c_str(), formattedMessage.length(), 0);
     }
 
-    receiveThread.join(); // Wait for the receive thread to finish
+    receiveThread.join();
 }
 
 void Client::receiveMessages()
@@ -73,7 +70,7 @@ void Client::receiveMessages()
             close(clientSocket);
             exit(EXIT_FAILURE);
         }
-        cout << buffer << endl; // Display received message
+        cout << buffer << endl;
     }
 }
 
