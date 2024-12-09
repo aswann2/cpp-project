@@ -11,14 +11,19 @@
 
 using namespace std;
 
+// Constructor
 Server::Server(int port)
 {
+    // Create a socket
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    
+    // Establish server address/info
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(port);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 }
 
+// Deconstructor
 Server::~Server()
 {
     close(serverSocket);
@@ -30,16 +35,21 @@ Server::~Server()
 
 void Server::start()
 {
+    // Bind the socket
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    // Listen for incoming connections
     listen(serverSocket, 5);
     cout << "Server established." << endl;
 
     while (true)
     {
+        // This loop allows for the server to continually connect new user clients
         addClient();
     }
 }
 
+
+// Accept new user client
 void Server::addClient()
 {
     sockaddr_in clientAddress;
@@ -48,10 +58,12 @@ void Server::addClient()
 
     if (clientSocket != -1)
     {
+        // Add client socket to the list
         lock_guard<mutex> lock(clientMutex);
         clientSockets.push_back(clientSocket);
         cout << "Server> Client connected!" << endl;
 
+        // Create thread for specific client communication
         thread([this, clientSocket]() {
             char buffer[1024];
             bool firstMessageReceived = false; 
@@ -59,13 +71,16 @@ void Server::addClient()
 
             while (true)
             {
+                // Receive message
                 memset(buffer, 0, sizeof(buffer));
                 int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
                 if (bytesRead <= 0)
                 {
+                    // Client dc; broadcast leave msg
                     string leaveMessage =  username.substr(0, (username.length() / 2) - 1) + " left the server.";
                     broadcastMessage(leaveMessage, clientSocket);    
 
+                    // Close socket and remove from list
                     close(clientSocket);
                     lock_guard<mutex> lock(clientMutex);
                     clientSockets.erase(std::remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
@@ -74,6 +89,7 @@ void Server::addClient()
                     break;
                 }
 
+                // Join message
                 if (!firstMessageReceived)
                 {
                     username = buffer; 
@@ -83,6 +99,7 @@ void Server::addClient()
                 }
                 else
                 {
+                    // Broadcast to all connected user clients
                     broadcastMessage(buffer, clientSocket); 
                 }
             }
@@ -90,6 +107,7 @@ void Server::addClient()
     }
 }
 
+// Broadcast message to all clients except sender
 void Server::broadcastMessage(const string &message, int senderSocket)
 {
     lock_guard<mutex> lock(clientMutex);
@@ -104,6 +122,7 @@ void Server::broadcastMessage(const string &message, int senderSocket)
     }
 }
 
+// Get current time for timestamps
 string Server::getCurrentTime()
 {
     time_t rawtime;

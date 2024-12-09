@@ -7,11 +7,14 @@
 
 using namespace std;
 
+// Constructor
 Client::Client(const string &serverIP, int serverPort, const string &username)
     : serverIP(serverIP), serverPort(serverPort), username(username) {}
 
+// Establish server connection
 void Client::connectToServer()
 {
+    // Create a socket
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1)
     {
@@ -19,10 +22,12 @@ void Client::connectToServer()
         exit(EXIT_FAILURE);
     }
 
+    // Set server address/info
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(serverPort);
     inet_pton(AF_INET, serverIP.c_str(), &serverAddress.sin_addr);
 
+    // Connect
     if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
     {
         cerr << "Error connecting to server." << endl;
@@ -57,7 +62,7 @@ void Client::start()
         send(clientSocket, formattedMessage.c_str(), formattedMessage.length(), 0);
     }
 
-    receiveThread.join(); // Wait for the receive thread to finish
+    receiveThread.join();
 }
 
 void Client::receiveMessages()
@@ -65,7 +70,10 @@ void Client::receiveMessages()
     char buffer[1024];
     while (true)
     {
+        // Clear the buffer
         memset(buffer, 0, sizeof(buffer));
+        
+        // Receive msg
         int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
         if (bytesRead <= 0)
         {
@@ -73,7 +81,9 @@ void Client::receiveMessages()
             close(clientSocket);
             exit(EXIT_FAILURE);
         }
-        cout << buffer << endl; // Display received message
+
+        // Display message
+        cout << buffer << endl;
     }
 }
 
