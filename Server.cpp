@@ -34,7 +34,7 @@ void Server::start()
     listen(serverSocket, 5);
     cout << "Server established." << endl;
 
-    while (true)
+    while (running)
     {
         addClient();
     }
@@ -50,7 +50,6 @@ void Server::addClient()
     {
         lock_guard<mutex> lock(clientMutex);
         clientSockets.push_back(clientSocket);
-        cout << "Client connected!" << endl;
 
         thread([this, clientSocket]() {
             char buffer[1024];
@@ -63,22 +62,25 @@ void Server::addClient()
                 int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
                 if (bytesRead <= 0)
                 {
-                    string leaveMessage =  username.substr(0, (username.length() / 2) - 1) + " left the server.";
+                    username =  username.substr(0, (username.length() / 2) - 1);
+                    string leaveMessage =  username + " left the server.";
                     broadcastMessage(leaveMessage, clientSocket);    
 
                     close(clientSocket);
                     lock_guard<mutex> lock(clientMutex);
                     clientSockets.erase(std::remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
                     
-                    cout << "Client disconnected." << endl;
+                    cout << username << " disconnected." << endl;
                     break;
                 }
 
                 if (!firstMessageReceived)
                 {
-                    username = buffer; 
-                    string joinMessage = username.substr(0, (username.length() / 2) - 1) + " joined the server";
+                    username = buffer;
+                    username =  username.substr(0, (username.length() / 2) - 1); 
+                    string joinMessage = username + " joined the server";
                     broadcastMessage(joinMessage, clientSocket); 
+                    cout << username << " connected." << endl;
                     firstMessageReceived = true; 
                 }
                 else
