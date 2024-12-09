@@ -34,7 +34,7 @@ void Server::start()
     listen(serverSocket, 5);
     cout << "Server established." << endl;
 
-    while (true)
+    while (running)
     {
         addClient();
     }
