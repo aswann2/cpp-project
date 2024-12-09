@@ -61,7 +61,6 @@ void Server::addClient()
         // Add client socket to the list
         lock_guard<mutex> lock(clientMutex);
         clientSockets.push_back(clientSocket);
-        cout << "Server> Client connected!" << endl;
 
         // Create thread for specific client communication
         thread([this, clientSocket]() {
@@ -79,13 +78,13 @@ void Server::addClient()
                     // Client dc; broadcast leave msg
                     string leaveMessage =  username.substr(0, (username.length() / 2) - 1) + " left the server.";
                     broadcastMessage(leaveMessage, clientSocket);    
+                    cout << leaveMessage << endl;
 
                     // Close socket and remove from list
                     close(clientSocket);
                     lock_guard<mutex> lock(clientMutex);
                     clientSockets.erase(std::remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
                     
-                    cout << "Server> Client disconnected." << endl;
                     break;
                 }
 
@@ -93,14 +92,16 @@ void Server::addClient()
                 if (!firstMessageReceived)
                 {
                     username = buffer; 
-                    string joinMessage = username.substr(0, (username.length() / 2) - 1) + " joined the server";
-                    broadcastMessage(joinMessage, clientSocket); 
+                    string joinMessage = username.substr(0, (username.length() / 2) - 1) + " joined the server.";
+                    broadcastMessage(joinMessage, clientSocket);
+                    cout << joinMessage << endl; 
                     firstMessageReceived = true; 
                 }
                 else
                 {
                     // Broadcast to all connected user clients
-                    broadcastMessage(buffer, clientSocket); 
+                    broadcastMessage(buffer, clientSocket);
+                    cout << buffer << endl; 
                 }
             }
         }).detach();
