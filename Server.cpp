@@ -50,7 +50,7 @@ void Server::addClient()
     {
         lock_guard<mutex> lock(clientMutex);
         clientSockets.push_back(clientSocket);
-        cout << "Client connected!" << endl;
+        cout << "Server> Client connected!" << endl;
 
         thread([this, clientSocket]() {
             char buffer[1024];
@@ -70,7 +70,7 @@ void Server::addClient()
                     lock_guard<mutex> lock(clientMutex);
                     clientSockets.erase(std::remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
                     
-                    cout << "Client disconnected." << endl;
+                    cout << "Server> Client disconnected." << endl;
                     break;
                 }
 
