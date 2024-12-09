@@ -14,7 +14,7 @@ g++ *.cpp -o Launch
 ```
 3. Launch the server.
 ```
-Launch server
+./Launch server
 ```
 
 **To launch the user client on Linux:**
@@ -29,5 +29,5 @@ g++ *.cpp -o Launch
 ```
 3. Launch the user client.
 ```
-Launch client
+./Launch client
 ```
