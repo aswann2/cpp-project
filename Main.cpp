@@ -17,24 +17,7 @@ int main(int argc, char *argv[])
     if (mode == "server")
     {
         Server server(8080);
-
-        thread serverThread([&server]() {
-            server.start();
-        });
-
-        cout << "Type '/shutdown' to close the server." << endl;
-
-        while (true) {
-            string input;
-            getline(cin, input);
-
-            if (input == "/shutdown") {
-                cout << "Shutting down server..." << endl;
-                server.shutdown(); 
-                serverThread.join(); 
-                break;
-            }
-        }
+        server.start();
     }
     else if (mode == "client")
     {

@@ -19,18 +19,9 @@ public:
     void broadcastMessage(const string &message, int senderSocket);
     string getCurrentTime();
 
-    void shutdown() {
-        close(serverSocket);
-        for (int client : clientSockets) {
-            close(client);
-        }
-        running = false;
-    }
-
 private:
     int serverSocket;
     sockaddr_in serverAddress;
     vector<int> clientSockets;
     mutex clientMutex;
-    bool running = false;
 };
