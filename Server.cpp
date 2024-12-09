@@ -78,7 +78,7 @@ void Server::addClient()
                     // Client dc; broadcast leave msg
                     string leaveMessage =  username.substr(0, (username.length() / 2) - 1) + " left the server.";
                     broadcastMessage(leaveMessage, clientSocket);    
-                    cout << leaveMessage << endl;
+                    cout << getCurrentTime() << " " << leaveMessage << endl;
 
                     // Close socket and remove from list
                     close(clientSocket);
@@ -94,14 +94,14 @@ void Server::addClient()
                     username = buffer; 
                     string joinMessage = username.substr(0, (username.length() / 2) - 1) + " joined the server.";
                     broadcastMessage(joinMessage, clientSocket);
-                    cout << joinMessage << endl; 
+                    cout << getCurrentTime() << " " << joinMessage << endl; 
                     firstMessageReceived = true; 
                 }
                 else
                 {
                     // Broadcast to all connected user clients
                     broadcastMessage(buffer, clientSocket);
-                    cout << buffer << endl; 
+                    cout << getCurrentTime() << " " << buffer << endl; 
                 }
             }
         }).detach();
