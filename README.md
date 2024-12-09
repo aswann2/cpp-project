@@ -1,6 +1,6 @@
 # Simple Server Client Chat
 
-This project allows for a very simple, client server chat. It does not have fancy features and can only communicate messages back and forth. 
+This project allows for a very simple, client server chat. It does not have fancy features and can only communicate messages back and forth, showing receiving message timestamps.
 
 **To launch the server on Linux:**
 
